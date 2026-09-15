@@ -9,6 +9,8 @@ const SECTION3_IMG1 = `${BASE}img/s3img1.webp`;
 const SECTION3_IMG2 = `${BASE}img/s3img2.webp`;
 const SECTION3_BG = `${BASE}img/s3bg.webp`;
 const WA_3D = `${BASE}img/wa-3d.webp`;
+const KASPI = `${BASE}img/kaspi.webp`;
+const PIN_3D = `${BASE}img/pin-3d.webp`;
 // Первый экран: картинку увеличиваем, чтобы лицо продавца оказалось в большой карточке, а не под барами
 const HERO_ZOOM = 1.4;
 
@@ -240,7 +242,7 @@ function QtyControl({ id, cart, c, size = "md" }: { id: string; cart: Cart; c: C
   const h = size === "sm" ? "h-9" : "h-11";
   if (!q)
     return (
-      <button onClick={() => cart.add(id)} className={`${h} w-full px-4 bg-black rounded-full text-white text-sm font-semibold hover:bg-neutral-800 transition-colors`}>
+      <button onClick={() => cart.add(id)} className={`${h} w-full px-4 btn3d btn3d-dark rounded-full text-white text-sm font-semibold`}>
         {c.ui.addToCart}
       </button>
     );
@@ -306,7 +308,7 @@ function Navbar({ c, onLang, onCart, count, route }: { c: Content; onLang: () =>
   };
 
   const CartBtn = ({ full }: { full?: boolean }) => (
-    <button onClick={onCart} className={`relative px-5 py-3 bg-black rounded-full text-white text-sm font-semibold hover:bg-neutral-800 transition-colors ${full ? "w-full py-4" : ""}`}>
+    <button onClick={onCart} className={`relative px-5 py-3 btn3d btn3d-dark rounded-full text-white text-sm font-semibold ${full ? "w-full py-4" : ""}`}>
       {c.ui.cart}
       {count > 0 && <span className="ml-2 inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#F0B429] text-black text-xs font-bold tabular-nums">{count}</span>}
     </button>
@@ -353,7 +355,7 @@ function Navbar({ c, onLang, onCart, count, route }: { c: Content; onLang: () =>
         </nav>
 
         <div className="md:hidden flex items-center gap-2">
-          <button onClick={onCart} className="relative w-10 h-10 rounded-full bg-black text-white flex items-center justify-center" aria-label={c.ui.cart}>
+          <button onClick={onCart} className="relative w-10 h-10 rounded-full btn3d btn3d-dark text-white flex items-center justify-center" aria-label={c.ui.cart}>
             <CartIcon />
             {count > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#F0B429] text-black text-[10px] font-bold flex items-center justify-center">{count}</span>}
           </button>
@@ -508,7 +510,7 @@ function CatalogMosaic({ c }: { c: Content }) {
             <br />
             {c.catalog.text2}
           </p>
-          <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" className="absolute bottom-4 right-4 md:bottom-6 md:right-6 px-5 py-3 md:px-8 md:py-5 bg-white rounded-full text-black text-base md:text-xl font-bold z-10 hover:scale-105 transition-transform">
+          <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" className="absolute bottom-4 right-4 md:bottom-6 md:right-6 px-5 py-3 md:px-8 md:py-5 btn3d btn3d-light rounded-full text-black text-base md:text-xl font-bold z-10">
             {c.catalog.button}
           </a>
         </MaskedCard>
@@ -616,7 +618,7 @@ function DeliverySection({ c }: { c: Content }) {
                 {c.delivery.h3[2]}
               </h3>
             </div>
-            <a href={autoHref} target="_blank" rel="noreferrer" className="px-5 py-3 md:px-8 md:py-5 bg-white rounded-full text-black text-base md:text-xl font-bold hover:scale-105 transition-transform whitespace-nowrap">
+            <a href={autoHref} target="_blank" rel="noreferrer" className="px-5 py-3 md:px-8 md:py-5 btn3d btn3d-light rounded-full text-black text-base md:text-xl font-bold whitespace-nowrap">
               {c.delivery.button}
             </a>
           </div>
@@ -666,15 +668,21 @@ function DeliverySection({ c }: { c: Content }) {
             ))}
           </ol>
         </div>
-        <div className="rounded-xl md:rounded-2xl bg-black text-white p-5 md:p-8 flex flex-col justify-between">
-          <h3 className="text-2xl md:text-3xl font-bold">{c.delivery.card2.join(" ")}</h3>
+        <div className="rounded-xl md:rounded-2xl bg-white border border-black/10 p-5 md:p-8 flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-4">
+            <h3 className="text-2xl md:text-3xl font-bold">{c.delivery.card2.join(" ")}</h3>
+            <img src={KASPI} alt="Kaspi" className="w-14 h-14 md:w-16 md:h-16 rounded-2xl shrink-0 shadow-[0_8px_18px_rgba(241,70,53,0.35)]" />
+          </div>
           <ul className="mt-5 flex flex-col gap-3">
-            {c.delivery.pay.map((p) => (
-              <li key={p} className="flex gap-3 items-center">
-                <span className="w-5 h-5 shrink-0 rounded-full bg-[#F0B429] text-black flex items-center justify-center text-[10px] font-bold">✓</span>
-                <span className="font-semibold">{p}</span>
-              </li>
-            ))}
+            {c.delivery.pay.map((p) => {
+              const kaspi = /kaspi/i.test(p);
+              return (
+                <li key={p} className="flex gap-3 items-center">
+                  <span className={`w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-[11px] font-bold text-white ${kaspi ? "bg-[#F14635]" : "bg-black"}`}>✓</span>
+                  <span className={`font-semibold ${kaspi ? "text-[#F14635]" : ""}`}>{p}</span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
@@ -750,8 +758,13 @@ function Footer({ c }: { c: Content }) {
             <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
               {c.shop.phone}
             </a>
-            <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
-            <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
+            <div className="flex items-center gap-3 mt-3">
+              <img src={PIN_3D} alt="" className="w-12 h-12 md:w-14 md:h-14 shrink-0 drop-shadow-[0_8px_14px_rgba(241,70,53,0.35)]" />
+              <div>
+                <p className="text-sm md:text-base">{c.shop.address}</p>
+                <p className="text-sm md:text-base mt-0.5">{c.shop.hours}</p>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -788,7 +801,7 @@ function Floating({ c, cart, onCart }: { c: Content; cart: Cart; onCart: () => v
       </div>
       {cart.count > 0 && (
         <div className="md:hidden fixed left-3 right-3 bottom-3 z-40">
-          <button onClick={onCart} className="w-full py-4 bg-black rounded-full text-white text-sm font-bold shadow-xl flex items-center justify-center gap-3">
+          <button onClick={onCart} className="w-full py-4 btn3d btn3d-dark rounded-full text-white text-sm font-bold flex items-center justify-center gap-3">
             <span>
               {c.ui.cart} · {cart.count}
             </span>
@@ -889,7 +902,7 @@ function CartDrawer({ c, cart, open, onClose }: { c: Content; cart: Cart; open: 
               <span className="text-2xl font-bold tabular-nums">{fmtPrice(cart.total)}</span>
             </div>
             <p className="text-xs text-neutral-500 mt-1">{c.ui.cartDelivery}</p>
-            <a href={waHref()} target="_blank" rel="noreferrer" className="mt-3 w-full py-4 bg-black rounded-full text-white text-sm font-bold hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2">
+            <a href={waHref()} target="_blank" rel="noreferrer" className="mt-3 w-full py-4 btn3d btn3d-green rounded-full text-white text-sm font-bold flex items-center justify-center gap-2">
               <WhatsAppIcon />
               {c.ui.cartSend}
             </a>
