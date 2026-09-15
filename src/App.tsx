@@ -12,6 +12,7 @@ const WA_3D = `${BASE}img/wa-3d.webp`;
 const KASPI = `${BASE}img/kaspi.webp`;
 const PIN_MAP = `${BASE}img/pin-map.webp`;
 const PHONE_3D = `${BASE}img/phone-3d.webp`;
+const BAG_WHEELS = `${BASE}img/bag-wheels.webp`;
 // Первый экран: картинку увеличиваем, чтобы лицо продавца оказалось в большой карточке, а не под барами
 const HERO_ZOOM = 1.4;
 
@@ -592,13 +593,15 @@ function DeliverySection({ c }: { c: Content }) {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 md:gap-2 md:h-[calc(100vh-7rem)]">
         <div className="flex flex-col gap-1.5 md:gap-2">
-          <div style={reveal.getAnimStyle(0)} className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-7 flex flex-col justify-between flex-[1.2] min-h-[180px] md:min-h-0">
-            <h2 className="text-[clamp(2.6rem,6vw,6rem)] font-bold leading-[0.95] text-black">
+          <div style={reveal.getAnimStyle(0)} className="relative rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-7 flex flex-col justify-between flex-[1.2] min-h-[180px] md:min-h-0 overflow-hidden">
+            <h2 className="text-[clamp(2.6rem,6vw,6rem)] font-bold leading-[0.95] text-black relative z-10">
               {c.delivery.h2[0]}
               <br />
               {c.delivery.h2[1]}
             </h2>
-            <p className="text-xs md:text-sm font-semibold text-black mt-4">{c.delivery.sub}</p>
+            <p className="text-xs md:text-sm font-semibold text-black mt-4 relative z-10 max-w-[60%]">{c.delivery.sub}</p>
+            {/* 3D-сумка на колёсах: иллюстрация доставки */}
+            <img src={BAG_WHEELS} alt="" className="absolute right-3 bottom-2 md:right-6 md:bottom-4 w-28 md:w-44 object-contain drop-shadow-[0_14px_22px_rgba(0,0,0,0.2)] pointer-events-none" />
           </div>
           <div style={reveal.getAnimStyle(1)} className="flex gap-1.5 md:gap-2 flex-1 min-h-[140px] md:min-h-0">
             <div className="flex-1 rounded-xl md:rounded-2xl overflow-hidden">
@@ -743,7 +746,7 @@ function Footer({ c }: { c: Content }) {
   return (
     <footer id="contacts" className="w-full px-3 md:px-5 pt-6 md:pt-8 pb-24 md:pb-28 scroll-mt-20 md:scroll-mt-24">
       <div className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-10 md:pr-28 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="flex items-center justify-between gap-4">
+        <div>
           <div>
             <div className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight leading-none">
               {c.shop.logoTop}
@@ -752,18 +755,20 @@ function Footer({ c }: { c: Content }) {
             </div>
             <p className="text-sm font-medium mt-3">{c.shop.tagline}</p>
           </div>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
+            <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
+              {c.shop.phone}
+            </a>
+            <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
+            <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
+          </div>
           {/* 3D-геометка на карте: ведёт на карту с адресом */}
           <a href={mapHref} target="_blank" rel="noreferrer" aria-label={c.footer.find} className="group shrink-0">
-            <img src={PIN_MAP} alt="" className="w-24 h-24 md:w-28 md:h-28 object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+            <img src={PIN_MAP} alt="" className="w-24 md:w-28 object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
           </a>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
-          <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
-            {c.shop.phone}
-          </a>
-          <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
-          <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
         </div>
         <div className="flex items-center justify-between gap-4">
           <div>
