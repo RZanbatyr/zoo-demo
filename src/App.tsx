@@ -8,6 +8,9 @@ const SECTION2_IMAGE = `${BASE}img/section2.webp`;
 const SECTION3_IMG1 = `${BASE}img/s3img1.webp`;
 const SECTION3_IMG2 = `${BASE}img/s3img2.webp`;
 const SECTION3_BG = `${BASE}img/s3bg.webp`;
+const WA_3D = `${BASE}img/wa-3d.webp`;
+// Первый экран: картинку увеличиваем, чтобы лицо продавца оказалось в большой карточке, а не под барами
+const HERO_ZOOM = 1.4;
 
 // ------------------------------------------------------------------ hooks
 
@@ -113,6 +116,8 @@ function MaskedCard({
   cardRef,
   style,
   onClick,
+  zoom = 1,
+  focalY = 0,
 }: {
   bgImage: string;
   position?: MaskPos;
@@ -123,10 +128,14 @@ function MaskedCard({
   cardRef: (el: HTMLDivElement | null) => void;
   style?: CSSProperties;
   onClick?: () => void;
+  zoom?: number; // >1 увеличивает картинку, чтобы сдвинуть сюжет вниз (лицо ниже верхних баров)
+  focalY?: number; // 0 = верх картинки прижат к верху секции, 1 = низ
 }) {
   const p = position || { x: 0, y: 0, sw: 0, sh: 0 };
-  const overflow = imageWidth > p.sw ? imageWidth - p.sw : 0;
-  const focalOffset = overflow * focalX;
+  const bgW = imageWidth * zoom;
+  const bgH = p.sh * zoom;
+  const overflowX = bgW > p.sw ? bgW - p.sw : 0;
+  const overflowY = bgH > p.sh ? bgH - p.sh : 0;
   return (
     <div
       ref={cardRef}
@@ -135,8 +144,8 @@ function MaskedCard({
       style={{
         ...style,
         backgroundImage: `url(${bgImage})`,
-        backgroundSize: `auto ${p.sh}px`,
-        backgroundPosition: `-${p.x + focalOffset}px -${p.y}px`,
+        backgroundSize: `auto ${bgH}px`,
+        backgroundPosition: `-${p.x + overflowX * focalX}px -${p.y + overflowY * focalY}px`,
         backgroundRepeat: "no-repeat",
         backgroundColor: "#e7e5e4",
       }}
@@ -403,6 +412,16 @@ function Navbar({ c, onLang, onCart, count, route }: { c: Content; onLang: () =>
   );
 }
 
+// Объёмная глянцевая кнопка WhatsApp (картинка из референсов Рахат), с подписью справа или без
+function WaButton({ href, label, size = 72, className = "" }: { href: string; label?: string; size?: number; className?: string }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" aria-label="WhatsApp" className={`group inline-flex items-center gap-3 ${className}`}>
+      <img src={WA_3D} alt="" width={size} height={size} style={{ width: size, height: size }} className="shrink-0 drop-shadow-[0_10px_18px_rgba(37,211,102,0.35)] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+      {label && <span className="text-sm md:text-base font-bold leading-tight">{label}</span>}
+    </a>
+  );
+}
+
 const CartIcon = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M6 6h15l-1.5 8h-12z" />
@@ -433,11 +452,11 @@ function HeroMosaic({ c }: { c: Content }) {
       className="h-screen w-full overflow-hidden flex flex-col pt-24 md:pt-24 px-3 md:px-5 pb-1.5 md:pb-2 gap-1.5 md:gap-2"
     >
       {c.featureBars.map((f, i) => (
-        <MaskedCard key={f} bgImage={HERO_IMAGE} position={positions[i]} imageWidth={imageWidth} focalX={focalX} cardRef={(el) => (cardsRef.current[i] = el)} style={reveal.getAnimStyle(i)} className="w-full h-14 md:h-20 shrink-0 rounded-xl md:rounded-2xl overflow-hidden relative">
+        <MaskedCard key={f} bgImage={HERO_IMAGE} position={positions[i]} imageWidth={imageWidth} focalX={focalX} zoom={HERO_ZOOM} cardRef={(el) => (cardsRef.current[i] = el)} style={reveal.getAnimStyle(i)} className="w-full h-14 md:h-20 shrink-0 rounded-xl md:rounded-2xl overflow-hidden relative">
           <span className="relative z-10 flex items-center justify-center h-full text-black text-lg md:text-3xl font-bold text-center px-3">{f}</span>
         </MaskedCard>
       ))}
-      <MaskedCard bgImage={HERO_IMAGE} position={positions[3]} imageWidth={imageWidth} focalX={focalX} cardRef={(el) => (cardsRef.current[3] = el)} style={reveal.getAnimStyle(3)} className="w-full flex-1 min-h-0 rounded-xl md:rounded-2xl overflow-hidden relative">
+      <MaskedCard bgImage={HERO_IMAGE} position={positions[3]} imageWidth={imageWidth} focalX={focalX} zoom={HERO_ZOOM} cardRef={(el) => (cardsRef.current[3] = el)} style={reveal.getAnimStyle(3)} className="w-full flex-1 min-h-0 rounded-xl md:rounded-2xl overflow-hidden relative">
         <p className="absolute top-4 left-4 md:top-7 md:left-7 text-black text-xs md:text-sm font-semibold leading-4 md:leading-5 max-w-[200px] md:max-w-[300px] z-10">
           {c.hero.top}
           <br />
@@ -712,41 +731,36 @@ function PhotosSection({ c }: { c: Content }) {
 
 function Footer({ c }: { c: Content }) {
   return (
-    <footer id="contacts" className="w-full px-3 md:px-5 pt-6 md:pt-8 pb-24 md:pb-8 scroll-mt-20 md:scroll-mt-24">
-      <div className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <div className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight leading-none">
-            {c.shop.logoTop}
-            <br />
-            {c.shop.logoBottom}
+    <footer id="contacts" className="w-full px-3 md:px-5 pt-6 md:pt-8 pb-24 md:pb-28 scroll-mt-20 md:scroll-mt-24">
+      <div className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-10 md:pr-28 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight leading-none">
+              {c.shop.logoTop}
+              <br />
+              {c.shop.logoBottom}
+            </div>
+            <p className="text-sm font-medium mt-3">{c.shop.tagline}</p>
           </div>
-          <p className="text-sm font-medium mt-3">{c.shop.tagline}</p>
-          <div className="flex gap-2 mt-5">
-            <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" className="w-11 h-11 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors" aria-label="WhatsApp">
-              <WhatsAppIcon />
+          <WaButton href={c.shop.whatsapp} size={84} />
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
+            <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
+              {c.shop.phone}
             </a>
-            {c.shop.instagram && (
-              <a href={c.shop.instagram} target="_blank" rel="noreferrer" className="w-11 h-11 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors" aria-label="Instagram">
-                <InstagramIcon />
-              </a>
-            )}
+            <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
+            <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
           </div>
         </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
-          <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
-            {c.shop.phone}
-          </a>
-          <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
-          <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.find}</p>
-          <p className="text-sm md:text-base">{c.shop.landmark}</p>
-          <p className="text-sm md:text-base mt-4 font-semibold">{c.footer.promise}</p>
-          <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" className="inline-block mt-5 px-6 py-3 bg-black rounded-full text-white text-sm font-semibold hover:bg-neutral-800 transition-colors">
-            WhatsApp
-          </a>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.find}</p>
+            <p className="text-sm md:text-base">{c.shop.landmark}</p>
+            <p className="text-sm md:text-base mt-4 font-semibold">{c.footer.promise}</p>
+          </div>
+          <WaButton href={c.shop.whatsapp} size={84} />
         </div>
       </div>
       <div className="mt-1.5 md:mt-2 rounded-xl md:rounded-2xl border border-dashed border-black/25 px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs md:text-sm text-neutral-700">
@@ -768,8 +782,8 @@ function Floating({ c, cart, onCart }: { c: Content; cart: Cart; onCart: () => v
   return (
     <>
       <div className="fixed right-3 md:right-5 bottom-20 md:bottom-6 z-40 flex flex-col gap-2">
-        <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-          <WhatsAppIcon />
+        <a href={c.shop.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="block w-14 h-14 md:w-[76px] md:h-[76px] transition-transform duration-300 hover:scale-110">
+          <img src={WA_3D} alt="" className="w-full h-full drop-shadow-[0_12px_20px_rgba(37,211,102,0.4)]" />
         </a>
       </div>
       {cart.count > 0 && (
