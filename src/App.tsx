@@ -10,7 +10,8 @@ const SECTION3_IMG2 = `${BASE}img/s3img2.webp`;
 const SECTION3_BG = `${BASE}img/s3bg.webp`;
 const WA_3D = `${BASE}img/wa-3d.webp`;
 const KASPI = `${BASE}img/kaspi.webp`;
-const PIN_3D = `${BASE}img/pin-3d.webp`;
+const PIN_MAP = `${BASE}img/pin-map.webp`;
+const PHONE_3D = `${BASE}img/phone-3d.webp`;
 // Первый экран: картинку увеличиваем, чтобы лицо продавца оказалось в большой карточке, а не под барами
 const HERO_ZOOM = 1.4;
 
@@ -738,6 +739,7 @@ function PhotosSection({ c }: { c: Content }) {
 // ------------------------------------------------------------------ footer
 
 function Footer({ c }: { c: Content }) {
+  const mapHref = `https://www.google.com/maps/search/${encodeURIComponent(c.shop.address)}`;
   return (
     <footer id="contacts" className="w-full px-3 md:px-5 pt-6 md:pt-8 pb-24 md:pb-28 scroll-mt-20 md:scroll-mt-24">
       <div className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-10 md:pr-28 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -750,22 +752,18 @@ function Footer({ c }: { c: Content }) {
             </div>
             <p className="text-sm font-medium mt-3">{c.shop.tagline}</p>
           </div>
-          <WaButton href={c.shop.whatsapp} size={84} />
+          {/* 3D-геометка на карте: ведёт на карту с адресом */}
+          <a href={mapHref} target="_blank" rel="noreferrer" aria-label={c.footer.find} className="group shrink-0">
+            <img src={PIN_MAP} alt="" className="w-24 h-24 md:w-28 md:h-28 object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+          </a>
         </div>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
-            <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
-              {c.shop.phone}
-            </a>
-            <div className="flex items-center gap-3 mt-3">
-              <img src={PIN_3D} alt="" className="w-12 h-12 md:w-14 md:h-14 shrink-0 drop-shadow-[0_8px_14px_rgba(241,70,53,0.35)]" />
-              <div>
-                <p className="text-sm md:text-base">{c.shop.address}</p>
-                <p className="text-sm md:text-base mt-0.5">{c.shop.hours}</p>
-              </div>
-            </div>
-          </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-3">{c.footer.contacts}</p>
+          <a href={c.shop.phoneHref} className="block text-xl md:text-2xl font-bold">
+            {c.shop.phone}
+          </a>
+          <p className="text-sm md:text-base mt-2">{c.shop.address}</p>
+          <p className="text-sm md:text-base mt-1">{c.shop.hours}</p>
         </div>
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -773,7 +771,10 @@ function Footer({ c }: { c: Content }) {
             <p className="text-sm md:text-base">{c.shop.landmark}</p>
             <p className="text-sm md:text-base mt-4 font-semibold">{c.footer.promise}</p>
           </div>
-          <WaButton href={c.shop.whatsapp} size={84} />
+          {/* 3D-кнопка телефона: звонок */}
+          <a href={c.shop.phoneHref} aria-label={c.shop.phone} className="group shrink-0">
+            <img src={PHONE_3D} alt="" className="w-20 md:w-24 object-contain drop-shadow-[0_10px_18px_rgba(37,211,102,0.3)] transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+          </a>
         </div>
       </div>
       <div className="mt-1.5 md:mt-2 rounded-xl md:rounded-2xl border border-dashed border-black/25 px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs md:text-sm text-neutral-700">
