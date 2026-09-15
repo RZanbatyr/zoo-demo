@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    /* min-height, не height: иначе скроллером становится body и видео героя не перематывается */
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #fff;
+    color: #111;
+  }
+  /* Safari красит текст кнопок синим без этого */
+  button { color: inherit; appearance: none; -webkit-appearance: none; }
+}
