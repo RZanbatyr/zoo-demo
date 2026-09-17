@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode, RefObject } from "react";
 import { CONTENT, fmtPrice, type Category, type Content, type Lang, type Product } from "./content";
+import { applyJsonLd } from "./seo";
 
 const BASE = import.meta.env.BASE_URL;
 const HERO_IMAGE = `${BASE}img/hero.webp`;
@@ -1002,6 +1003,11 @@ export default function App() {
   const closeCart = useCallback(() => setCartOpen(false), []);
   const toggleLang = () => setLang((l) => (l === "ru" ? "kz" : "ru"));
   const cat = useMemo(() => (route.kind === "cat" ? c.categories.find((x) => x.slug === route.slug) : undefined), [route, c]);
+
+  // JSON-LD для Google и ИИ-ассистентов: магазин + каталог с ценами
+  useEffect(() => {
+    applyJsonLd(c, cat);
+  }, [c, cat]);
 
   return (
     <div className="bg-white">
